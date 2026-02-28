@@ -89,11 +89,8 @@ int main()
         cs_asm[i] = checksum_asm;
     }
 
-    /* Salida por pantalla:
-       - checksum para validar que el cálculo es correcto
-       - tiempo total de ejecución medido */
-
-
+    // Salida por pantalla:
+    
     cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86" << endl;
     cout << "---------------------------------------------------------------------------------" << endl;
                             
