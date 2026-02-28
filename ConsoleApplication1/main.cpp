@@ -8,7 +8,7 @@
 using namespace std;
 
 /* ================================================================
-   Este programa ejecuta la versión en C/C++ del kernel inspirado
+   Este programa ejecuta la versión en C++ del kernel inspirado
    en STREAM TRIAD para usarla como referencia y poder compararla
    posteriormente con una versión en ensamblador x86.
 
@@ -21,13 +21,9 @@ using namespace std;
    - produce exactamente el mismo resultado
    - y comparar directamente los tiempos de ejecución
 
-   Este archivo actúa como driver del benchmark en C/C++.
    ================================================================ */
 
 
-   /* Prototipo de la función implementada en Benchmark_cpp.cpp.
-      Se separa la lógica del benchmark en una función independiente
-      para poder reutilizarla o sustituirla por la versión en ASM. */
 void bench_cpp(int* a, int* b, int* c,int n,int iteraciones,int escalar,uint32_t& checksum);
 void inicializar(int* a, int* b, int* c, int n);
 void bench_asm(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint32_t& checksum);
@@ -39,21 +35,20 @@ int main()
        real sobre CPU y memoria, pero sin consumir demasiada RAM. */
     const int n = 1 << 20;
 
-    int iteraciones = 300;   // Número de veces que se repite el kernel
-    const int escalar = 7;       // Constante usada en el cálculo
-    const int repeticiones = 20;
-    vector<double> tiempo_c(repeticiones);
-    vector<double> tiempo_asm(repeticiones);
+    int iteraciones = 300;                      // Número de veces que se repite el kernel
+    const int escalar = 7;                      // Constante usada en el cálculo
+    const int repeticiones = 20;                // Número de veces que llamaremos a las funciones del benchmark tanto en C++ como en c_86
+    vector<double> tiempo_c(repeticiones);      // Vector donde se almacenara los tiempos de ejecucion del benchmark en C++
+    vector<double> tiempo_asm(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en asm x_86
 
-    /* Se reservan tres vectores dinámicos de tamaño n.
-       std::vector garantiza memoria contigua, lo cual es importante
-       para rendimiento y para poder pasar punteros a la función. */
+    // Se reservan tres vectores dinámicos de tamaño n.
+    
     vector<int> a(n);
     vector<int> b(n);
     vector<int> c(n);
 
 
-    /* Variable donde se almacenará el checksum final.
+    /* Variables donde se almacenará los checksum final.
        Se pasa por referencia a la función para que pueda escribir
        el resultado directamente aquí. */
     vector<uint32_t> csc(20);
@@ -61,36 +56,24 @@ int main()
     uint32_t  checksum_c = 0;
     uint32_t  checksum_asm = 0;
 
-    /* Inicio de la medición de tiempo.
-       Se usa un reloj de alta resolución para obtener medidas
-       precisas del tiempo de ejecución real. */
-    auto inicio = chrono::high_resolution_clock::now();
-
-
-    /* Llamada al benchmark en C/C++.
-
-       Se pasan punteros a los datos reales usando .data(),
-       junto con el tamaño, número de iteraciones y el escalar.
-
-       La función se encarga de:
-       - inicializar los vectores
-       - ejecutar el kernel varias veces
-       - calcular el checksum final */
+    // Llamada al benchmark en C/C++ y lo ejecuta 20 veces
 
     for (int i = 0; i < repeticiones; i++)
     {
-        inicializar(a.data(), b.data(), c.data(), n);
+        inicializar(a.data(), b.data(), c.data(), n);   /// Restablece los datos de entrada para garantizar que cada prueba parta de condiciones idénticas
 
-        auto t0 = chrono::high_resolution_clock::now();
-        bench_cpp(a.data(), b.data(), c.data(), n, iteraciones, escalar, checksum_c);
-        auto t1 = chrono::high_resolution_clock::now();
+        auto t0 = chrono::high_resolution_clock::now(); // // Captura el instante de tiempo justo antes de iniciar
+        bench_cpp(a.data(), b.data(), c.data(), n, iteraciones, escalar, checksum_c);   //// Ejecución de la función de benchmark en C++ (cálculo principal)
+        auto t1 = chrono::high_resolution_clock::now(); // Captura el instante de tiempo inmediatamente después de finalizar
 
-        chrono::duration<double> dt = t1 - t0;
+        chrono::duration<double> dt = t1 - t0;  // Calcula el tiempo transcurrido (diferencia) en segundos
 
-        tiempo_c[i] = dt.count();   // <- ahora sí (double en segundos)
+        // Almacena el tiempo de la repetición actual y el checksum para validación posterior
+        tiempo_c[i] = dt.count();   
         csc[i] = checksum_c;
     }
 
+    // Llamada al benchmark en x_86 y lo ejecuta 20 veces
 
     for (int i = 0; i < repeticiones; i++)
     {
