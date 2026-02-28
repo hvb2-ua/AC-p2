@@ -111,7 +111,8 @@ int main()
        - tiempo total de ejecución medido */
 
 
-    cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86"     << endl;
+    cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86" << endl;
+    cout << "---------------------------------------------------------------------------------" << endl;
                             
     cout << fixed << setprecision(4);
 
@@ -119,11 +120,11 @@ int main()
     {
         if (i < 9)
         {
-            cout << "     " << i+1 << "            " << tiempo_c[i] << "          " << tiempo_asm[i] << "           " << csc[i] << "        " << cs_asm[i] << endl;
+            cout << "     " << i + 1 << "            " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "        " << csc[i] << "        " << cs_asm[i] << endl;
         }
         else
         {
-            cout << "     " << i + 1 << "           " << tiempo_c[i] << "          " << tiempo_asm[i] << "           " << csc[i] << "        " << cs_asm[i] << endl;
+            cout << "     " << i + 1 << "           " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "        " << csc[i] << "        " << cs_asm[i] << endl;
         }
 
     }
