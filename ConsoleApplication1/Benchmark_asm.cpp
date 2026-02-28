@@ -13,10 +13,10 @@ void bench_asm(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint
 
     _asm
     {
-        mov ecx, I                  // Pasamos la variable iteraciones al registro ECX (lo usamos como contador externo)
+        mov ecx, I                      // Pasamos la variable iteraciones al registro ECX (lo usamos como contador externo)
 
         BucleExterno :
-        test ecx, ecx               // Comprobamos si ECX (iteraciones restantes) es <= 0
+        test ecx, ecx                   // Comprobamos si ECX (iteraciones restantes) es <= 0
             jle  FinBucleExterno        // Si ya no quedan iteraciones salimos del bucle externo
 
             mov edx, N                  // Pasamos la variable n al registro EDX (contador del bucle interno)
@@ -25,13 +25,13 @@ void bench_asm(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint
             mov ebx, pc                 // EBX apunta al inicio del vector c (c[0])
 
             RecorrerVector :
-        test edx, edx               // Comprobamos si EDX (elementos restantes) es <= 0
+        test edx, edx                   // Comprobamos si EDX (elementos restantes) es <= 0
             jle  FinBucleInterno        // Si no quedan elementos salimos del bucle interno
 
             mov eax, [ebx]              // Cargamos c[j] en EAX (EBX apunta al elemento actual)
             imul eax, S                 // Multiplicamos c[j] por el escalar S → eax = S * c[j]
             add eax, [edi]              // Sumamos b[j] + S*c[j] y dejamos el resultado en EAX
-            add[esi], eax              // a[j] += resultado (ESI apunta al elemento actual de a)
+            add[esi], eax               // a[j] += resultado (ESI apunta al elemento actual de a)
 
             add esi, 4                  // Avanza el puntero de a al siguiente elemento (cada int ocupa 4 bytes)
             add edi, 4                  // Avanza el puntero de b al siguiente elemento
@@ -41,7 +41,7 @@ void bench_asm(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint
             jmp RecorrerVector          // Volvemos al inicio del bucle interno
 
             FinBucleInterno :
-        dec ecx                     // Decrementamos el contador externo (queda una iteración menos)
+        dec ecx                         // Decrementamos el contador externo (queda una iteración menos)
             jmp BucleExterno            // Volvemos al inicio del bucle externo
 
             FinBucleExterno :

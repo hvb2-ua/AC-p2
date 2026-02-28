@@ -42,19 +42,16 @@ int main()
     vector<double> tiempo_asm(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en asm x_86
 
     // Se reservan tres vectores dinámicos de tamaño n.
-    
     vector<int> a(n);
     vector<int> b(n);
     vector<int> c(n);
 
 
-    /* Variables donde se almacenará los checksum final.
-       Se pasa por referencia a la función para que pueda escribir
-       el resultado directamente aquí. */
-    vector<uint32_t> csc(20);
-    vector<uint32_t> cs_asm(20);
-    uint32_t  checksum_c = 0;
-    uint32_t  checksum_asm = 0;
+
+    vector<uint32_t> csc(20);       // Lista para guardar los 20 resultados (checksums) de la versión C
+    vector<uint32_t> cs_asm(20);    // Lista para guardar los 20 resultados (checksums) de la versión x_86
+    uint32_t  checksum_c = 0;       // Variable para el resultado de la suma de control en un entero de 32 bits sin signo en la version en C++
+    uint32_t  checksum_asm = 0;     // Variable para el resultado de la suma de control en un entero de 32 bits sin signo en la version en x_86
 
     // Llamada al benchmark en C/C++ y lo ejecuta 20 veces
 
@@ -89,10 +86,13 @@ int main()
         cs_asm[i] = checksum_asm;
     }
 
-    // Salida por pantalla:
+    // TABLA DE RESULTADOS Y SPEEDUP 
+// Imprime la cabecera y fija 4 decimales para que todo se vea limpio.
+// El "if" es solo para que el número 10 no mueva las columnas de sitio.
+// En la última columna calculamos cuántas veces es más rápido ASM que C.
     
-    cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86" << endl;
-    cout << "---------------------------------------------------------------------------------" << endl;
+    cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86        Speedup" << endl;
+    cout << "------------------------------------------------------------------------------------------------" << endl;
                             
     cout << fixed << setprecision(4);
 
@@ -100,11 +100,11 @@ int main()
     {
         if (i < 9)
         {
-            cout << "     " << i + 1 << "            " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "        " << csc[i] << "        " << cs_asm[i] << endl;
+            cout << "     " << i + 1 << "           " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "         " << csc[i] << "        " << cs_asm[i] << "          " << tiempo_c[i]/tiempo_asm[i] << endl;
         }
         else
         {
-            cout << "     " << i + 1 << "           " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "        " << csc[i] << "        " << cs_asm[i] << endl;
+            cout << "     " << i + 1 << "          " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "         " << csc[i] << "        " << cs_asm[i] << "          " << tiempo_c[i] / tiempo_asm[i] << endl;
         }
 
     }
