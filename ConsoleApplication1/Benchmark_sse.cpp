@@ -11,7 +11,11 @@ void bench_sse(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint
     int  I = iteraciones;
     uint32_t* pchk = &checksum;
 
-    int bloques = n / 4;     // Numero de bloques completos de 4 enteros que podemos procesar con SSE
+    int bloques = n / 4;                // Calculamos cuántos bloques completos de 4 enteros caben dentro del vector.
+                                        // Lo hacemos así porque con SSE procesamos 4 enteros de 32 bits a la vez
+                                        // en un mismo registro XMM de 128 bits.
+                                        // Por ejemplo, si n = 16, entonces bloques = 4, porque hay 4 grupos de 4 enteros.
+                                        // Si n no es múltiplo de 4, los elementos que sobren se procesarán después en el bucle escalar del resto.
 
     __asm
     {
