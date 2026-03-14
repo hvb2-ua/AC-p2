@@ -27,6 +27,7 @@ using namespace std;
 void bench_cpp(int* a, int* b, int* c,int n,int iteraciones,int escalar,uint32_t& checksum);
 void inicializar(int* a, int* b, int* c, int n);
 void bench_asm(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint32_t& checksum);
+void bench_sse(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint32_t& checksum);
 
 int main()
 {
@@ -40,7 +41,7 @@ int main()
     const int repeticiones = 20;                // Número de veces que llamaremos a las funciones del benchmark tanto en C++ como en c_86
     vector<double> tiempo_c(repeticiones);      // Vector donde se almacenara los tiempos de ejecucion del benchmark en C++
     vector<double> tiempo_asm(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en asm x_86
-
+    vector<double> tiempo_sse(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en SSE
     // Se reservan tres vectores dinámicos de tamaño n.
     vector<int> a(n);
     vector<int> b(n);
@@ -50,8 +51,11 @@ int main()
 
     vector<uint32_t> csc(20);       // Lista para guardar los 20 resultados (checksums) de la versión C
     vector<uint32_t> cs_asm(20);    // Lista para guardar los 20 resultados (checksums) de la versión x_86
+    vector<uint32_t> cs_sse(20);    // Lista para guardar los 20 resultados (checksums) de la version SSE
     uint32_t  checksum_c = 0;       // Variable para el resultado de la suma de control en un entero de 32 bits sin signo en la version en C++
     uint32_t  checksum_asm = 0;     // Variable para el resultado de la suma de control en un entero de 32 bits sin signo en la version en x_86
+    uint32_t checksum_sse = 0;      // Variable para el resultado de la suma de control en un entero de 32 bits sin signo en la version SSE
+
 
     // Llamada al benchmark en C/C++ y lo ejecuta 20 veces
 
@@ -82,8 +86,24 @@ int main()
 
         chrono::duration<double> dt = t1 - t0;
 
-        tiempo_asm[i] = dt.count();   // <- ahora sí (double en segundos)
+        tiempo_asm[i] = dt.count();   
         cs_asm[i] = checksum_asm;
+    }
+
+    // Llamada al benchmark en SSE y lo ejecuta 20 veces
+
+    for (int i = 0; i < repeticiones; i++)
+    {
+        inicializar(a.data(), b.data(), c.data(), n);
+
+        auto t0 = chrono::high_resolution_clock::now();
+        bench_sse(a.data(), b.data(), c.data(), n, iteraciones, escalar, checksum_sse);
+        auto t1 = chrono::high_resolution_clock::now();
+
+        chrono::duration<double> dt = t1 - t0;
+
+        tiempo_sse[i] = dt.count();
+        cs_sse[i] = checksum_sse;
     }
 
     // TABLA DE RESULTADOS Y SPEEDUP 
@@ -91,8 +111,8 @@ int main()
 // El "if" es solo para que el número 10 no mueva las columnas de sitio.
 // En la última columna calculamos cuántas veces es más rápido ASM que C.
     
-    cout << "Iteracion        Tiempo_C        Tiempo_x86        Checksum_C        Checksum_x86        Speedup" << endl;
-    cout << "------------------------------------------------------------------------------------------------" << endl;
+    cout << "Iteracion        Tiempo_C        Tiempo_x86      Tiempo_SSE        Checksum_C        Checksum_x86      Checksum_SSE        Speedup_x86     Speedup_SSE" << endl;
+    cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
                             
     cout << fixed << setprecision(4);
 
@@ -100,13 +120,30 @@ int main()
     {
         if (i < 9)
         {
-            cout << "     " << i + 1 << "           " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "         " << csc[i] << "        " << cs_asm[i] << "          " << tiempo_c[i]/tiempo_asm[i] << endl;
+            cout << "     " << i + 1
+                << "           " << tiempo_c[i] << "(s)"
+                << "       " << tiempo_asm[i] << "(s)"
+                << "       " << tiempo_sse[i] << "(s)"
+                << "         " << csc[i]
+                << "        " << cs_asm[i]
+                << "        " << cs_sse[i]
+                << "          " << tiempo_c[i] / tiempo_asm[i]
+                << "          " << tiempo_c[i] / tiempo_sse[i]
+                << endl;
         }
         else
         {
-            cout << "     " << i + 1 << "          " << tiempo_c[i] << "(s)" << "       " << tiempo_asm[i] << "(s)" << "         " << csc[i] << "        " << cs_asm[i] << "          " << tiempo_c[i] / tiempo_asm[i] << endl;
+            cout << "     " << i + 1
+                << "          " << tiempo_c[i] << "(s)"
+                << "       " << tiempo_asm[i] << "(s)"
+                << "       " << tiempo_sse[i] << "(s)"
+                << "         " << csc[i]
+                << "        " << cs_asm[i]
+                << "        " << cs_sse[i]
+                << "          " << tiempo_c[i] / tiempo_asm[i]
+                << "          " << tiempo_c[i] / tiempo_sse[i]
+                << endl;
         }
-
     }
     return 0;
 }

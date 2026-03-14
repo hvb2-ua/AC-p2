@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="Benchmark_asm.cpp" />
     <ClCompile Include="Benchmark_cpp.cpp" />
+    <ClCompile Include="Benchmark_sse.cpp" />
     <ClCompile Include="inicializar.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
