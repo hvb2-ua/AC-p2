@@ -1,6 +1,17 @@
 ﻿#include <cstdint>
 #include <cstddef>
 
+/* 
+   En esta versión del benchmark usamos instrucciones SSE para
+   vectorizar el cálculo. Esto permite procesar 4 enteros a la vez
+   en lugar de uno solo, aprovechando los registros SIMD de la CPU.
+
+   La idea es hacer exactamente el mismo cálculo que en las otras
+   versiones pero de forma más eficiente, para poder comparar los
+   tiempos y ver la ganancia de speedup que se obtiene gracias a
+   la vectorización.
+  */
+
 void bench_sse(int* a, int* b, int* c, int n, int iteraciones, int escalar, uint32_t& checksum)
 {
     int* pa = a;
