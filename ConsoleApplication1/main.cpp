@@ -7,10 +7,20 @@
 
 using namespace std;
 
-/* ================================================================
+/*
    Este programa ejecuta la versión en C++ del kernel inspirado
    en STREAM TRIAD para usarla como referencia y poder compararla
    posteriormente con una versión en ensamblador x86.
+
+   Aqui dejo el enlace de donde hemos extraido el kernel: https://www.cs.virginia.edu/stream/stream_mail/2008/0005.html
+   en que aparece exactamente este codigo original:
+
+   for(j=0;j<N;j++) a[j]=b[j]+scalar*c[j];
+
+   Y lo hemos convertido a :
+
+   for (j=0; j<N; j++)
+    a[j] = b[j] + scalar * c[j];
 
    La idea es medir el tiempo de ejecución de un cálculo intensivo
    sobre vectores grandes y obtener además un checksum que permita
@@ -20,8 +30,7 @@ using namespace std;
    comprobar que:
    - produce exactamente el mismo resultado
    - y comparar directamente los tiempos de ejecución
-
-   ================================================================ */
+*/
 
 
 void bench_cpp(int* a, int* b, int* c,int n,int iteraciones,int escalar,uint32_t& checksum);
@@ -42,6 +51,7 @@ int main()
     vector<double> tiempo_c(repeticiones);      // Vector donde se almacenara los tiempos de ejecucion del benchmark en C++
     vector<double> tiempo_asm(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en asm x_86
     vector<double> tiempo_sse(repeticiones);    // Vector donde se almacenara los tiempos de ejecucion del benchmark en SSE
+
     // Se reservan tres vectores dinámicos de tamaño n.
     vector<int> a(n);
     vector<int> b(n);
@@ -109,7 +119,7 @@ int main()
     // TABLA DE RESULTADOS Y SPEEDUP 
 // Imprime la cabecera y fija 4 decimales para que todo se vea limpio.
 // El "if" es solo para que el número 10 no mueva las columnas de sitio.
-// En la última columna calculamos cuántas veces es más rápido ASM que C.
+// En las últimas columna calculamos cuántas veces es más rápido tando ASM como SSE que C..
     
     cout << "Iteracion        Tiempo_C        Tiempo_x86      Tiempo_SSE        Checksum_C        Checksum_x86      Checksum_SSE        Speedup_x86     Speedup_SSE" << endl;
     cout << "------------------------------------------------------------------------------------------------------------------------------------------------------" << endl;
